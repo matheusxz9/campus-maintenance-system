@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, ParseUUIDPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import { CriarCategoriaDto } from './dto/criar-categoria.dto';
 import { AtualizarCategoriaDto } from './dto/atualizar-categoria.dto';
@@ -23,7 +34,10 @@ export class CategoriasController {
   }
 
   @Patch(':id')
-  atualizar(@Param('id', ParseUUIDPipe) id: string, @Body() dto: AtualizarCategoriaDto) {
+  atualizar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AtualizarCategoriaDto,
+  ) {
     return this.service.atualizar(id, dto);
   }
 

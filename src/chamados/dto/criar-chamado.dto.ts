@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, MaxLength, IsEnum, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 import { PrioridadeChamado } from '../enums/prioridade-chamado';
 
 export class CriarChamadoDto {

@@ -2,8 +2,14 @@ import { StatusChamado } from './enums/status-chamado';
 
 const transicoes: Record<StatusChamado, StatusChamado[]> = {
   [StatusChamado.ABERTO]: [StatusChamado.EM_ANALISE, StatusChamado.CANCELADO],
-  [StatusChamado.EM_ANALISE]: [StatusChamado.EM_EXECUCAO, StatusChamado.CANCELADO],
-  [StatusChamado.EM_EXECUCAO]: [StatusChamado.CONCLUIDO, StatusChamado.CANCELADO],
+  [StatusChamado.EM_ANALISE]: [
+    StatusChamado.EM_EXECUCAO,
+    StatusChamado.CANCELADO,
+  ],
+  [StatusChamado.EM_EXECUCAO]: [
+    StatusChamado.CONCLUIDO,
+    StatusChamado.CANCELADO,
+  ],
   [StatusChamado.CONCLUIDO]: [],
   [StatusChamado.CANCELADO]: [],
 };

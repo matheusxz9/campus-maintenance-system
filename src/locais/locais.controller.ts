@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, ParseUUIDPipe, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { LocaisService } from './locais.service';
 import { CriarLocalDto } from './dto/criar-local.dto';
 import { AtualizarLocalDto } from './dto/atualizar-local.dto';
@@ -23,7 +34,10 @@ export class LocaisController {
   }
 
   @Patch(':id')
-  atualizar(@Param('id', ParseUUIDPipe) id: string, @Body() dto: AtualizarLocalDto) {
+  atualizar(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AtualizarLocalDto,
+  ) {
     return this.service.atualizar(id, dto);
   }
 
