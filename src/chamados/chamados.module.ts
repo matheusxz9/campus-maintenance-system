@@ -3,7 +3,7 @@ import { ChamadosService } from './chamados.service';
 import { ChamadosController } from './chamados.controller';
 
 @Module({
+  controllers: [ChamadosController],
   providers: [ChamadosService],
-  controllers: [ChamadosController]
 })
 export class ChamadosModule {}
