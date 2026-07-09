@@ -1,0 +1,7 @@
+export enum StatusChamado {
+  ABERTO = 'ABERTO',
+  EM_ANALISE = 'EM_ANALISE',
+  EM_EXECUCAO = 'EM_EXECUCAO',
+  CONCLUIDO = 'CONCLUIDO',
+  CANCELADO = 'CANCELADO',
+}
