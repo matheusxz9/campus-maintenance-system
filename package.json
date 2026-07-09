@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "postinstall": "npm --prefix frontend install",
     "start": "nest start",
     "dev": "concurrently -n api,web -c blue,green \"npm run start:dev\" \"npm --prefix frontend run dev\"",
     "start:dev": "nest start --watch",
