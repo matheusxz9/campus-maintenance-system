@@ -6,7 +6,16 @@ import { AtualizarCategoriaDto } from './dto/atualizar-categoria.dto';
 
 @Injectable()
 export class CategoriasService {
-  private categorias: Categoria[] = [];
+  private categorias: Categoria[] = [
+    { id: randomUUID(), nome: 'Elétrica', descricao: 'Problemas elétricos em geral', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Hidráulica', descricao: 'Vazamentos e entupimentos', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Estrutural', descricao: 'Problemas em paredes, pisos e tetos', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Pintura', descricao: 'Serviços de pintura', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Limpeza', descricao: 'Serviços de limpeza', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Climatização', descricao: 'Ar condicionado e ventilação', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Informática', descricao: 'Computadores, rede e equipamentos de TI', criadoEm: new Date() },
+    { id: randomUUID(), nome: 'Mobiliário', descricao: 'Cadeiras, mesas e armários', criadoEm: new Date() },
+  ];
 
   criar(dto: CriarCategoriaDto): Categoria {
     const categoria = {
