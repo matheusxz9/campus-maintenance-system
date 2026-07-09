@@ -1,16 +1,15 @@
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
-      - uploads_data:/app/uploads
+      - ./uploads:/app/uploads
     environment:
       - PORT=3000
       - UPLOAD_PATH=./uploads
       - EXTERNAL_API_URL=https://viacep.com.br/ws
-
-volumes:
-  uploads_data:

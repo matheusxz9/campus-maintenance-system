@@ -4,8 +4,8 @@ import {
   Post,
   Param,
   ParseUUIDPipe,
-  UploadedFile,
   UseInterceptors,
+  UploadedFile,
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
@@ -29,7 +29,7 @@ export class AnexosController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: process.env.UPLOAD_PATH ?? './uploads',
         filename: (_req, file, cb) => {
           const ext = extname(file.originalname);
           cb(null, `${randomUUID()}${ext}`);
@@ -47,7 +47,7 @@ export class AnexosController {
         ],
       }),
     )
-    file: Express.Multer.File
+    file: Express.Multer.File,
   ) {
     return this.anexosService.salvarReferenciaAnexo(id, file.path);
   }
