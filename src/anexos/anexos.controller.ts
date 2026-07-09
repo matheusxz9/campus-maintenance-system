@@ -47,7 +47,7 @@ export class AnexosController {
         ],
       }),
     )
-    file: Express.Multer.File,
+    file: Express.Multer.File
   ) {
     return this.anexosService.salvarReferenciaAnexo(id, file.path);
   }
