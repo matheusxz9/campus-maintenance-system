@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Chamado } from './chamado.entity';
 import { StatusChamado } from './enums/status-chamado';
@@ -73,7 +77,24 @@ export class ChamadosService {
 
   atualizarStatus(id: string, dto: AtualizarStatusDto): Chamado {
     const chamado = this.buscarPorId(id);
-    transitar(chamado.status, dto.status);
+
+    try {
+      transitar(chamado.status, dto.status);
+    } catch (erro) {
+      throw new BadRequestException(
+        erro instanceof Error ? erro.message : 'Transicao invalida',
+      );
+    }
+
+    if (
+      dto.status === StatusChamado.EM_EXECUCAO &&
+      !dto.tecnicoId
+    ) {
+      throw new BadRequestException(
+        'Tecnico obrigatorio para executar chamado',
+      );
+    }
+
     chamado.status = dto.status;
     chamado.atualizadoEm = new Date();
     if (dto.tecnicoId) {
