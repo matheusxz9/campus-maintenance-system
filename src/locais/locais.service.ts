@@ -6,7 +6,16 @@ import { AtualizarLocalDto } from './dto/atualizar-local.dto';
 
 @Injectable()
 export class LocaisService {
-  private locais: Local[] = [];
+  private locais: Local[] = [
+    { id: randomUUID(), bloco: 'A', sala: '101', campus: 'Campus Central', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'A', sala: '102', campus: 'Campus Central', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'B', sala: '201', campus: 'Campus Central', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'B', sala: '202', campus: 'Campus Central', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'Principal', sala: '1', campus: 'Campus Norte', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'Principal', sala: '2', campus: 'Campus Norte', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'Administrativo', sala: '1', campus: 'Campus Sul', criadoEm: new Date() },
+    { id: randomUUID(), bloco: 'Administrativo', sala: '2', campus: 'Campus Sul', criadoEm: new Date() },
+  ];
 
   criar(dto: CriarLocalDto): Local {
     const local = {
