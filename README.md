@@ -1,98 +1,200 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sistema de Chamados - Campus
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Sistema de gerenciamento de chamados de manutenção para campus universitário, com backend em NestJS e frontend em React.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Problema
 
-## Description
+O campus enfrenta dificuldades no registro, acompanhamento e gestão de chamados de manutenção. Não há um sistema centralizado para:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Registrar solicitações de reparo
+- Acompanhar o status das solicitações
+- Atribuir técnicos responsáveis
+- Categorizar e priorizar chamados
+- Registrar histórico de comentários por chamado
 
-## Project setup
+## Arquitetura
 
-```bash
-$ npm install
+```
+┌──────────────────────────────────────────────────┐
+│                    Frontend                      │
+│           React + TypeScript + Vite              │
+│  ┌──────────┐ ┌────────────┐ ┌───────────────┐  │
+│  │ Listagem │ │ Abertura   │ │ Detalhes      │  │
+│  │ (Filtros)│ │ (Upload)   │ │ (Status+Com.) │  │
+│  └────┬─────┘ └─────┬──────┘ └───────┬───────┘  │
+│       └──────┬──────┴───────┬────────┘          │
+│              │     Axios    │                    │
+│              └──────┬───────┘                    │
+│              /api (proxy) │                      │
+└──────────────────────┼───────────────────────────┘
+                       │ HTTP
+┌──────────────────────┼───────────────────────────┐
+│                  Backend                          │
+│               NestJS + Express                    │
+│                       │                           │
+│  ┌─────────┐ ┌──────────┐ ┌──────────┐          │
+│  │Categoria│ │ Chamados │ │  Locais  │          │
+│  │  CRUD   │ │  CRUD +  │ │   CRUD   │          │
+│  │         │ │Status/Filt│ │          │          │
+│  └─────────┘ └──────────┘ └──────────┘          │
+│                       │                           │
+│              ┌────────┴────────┐                 │
+│              │  In-Memory DB   │                 │
+│              └─────────────────┘                 │
+└──────────────────────────────────────────────────┘
 ```
 
-## Compile and run the project
+## Diagrama DER (Entidade-Relacionamento)
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+┌──────────────┐       ┌──────────────────┐
+│   Categoria  │       │     Chamado      │
+│──────────────│       │──────────────────│
+│ id (PK)      │──┐   │ id (PK)          │
+│ nome         │  └───>│ categoriaId (FK) │
+│ descricao    │       │ localId (FK)     │
+│ criadoEm     │       │ solicitanteId    │
+└──────────────┘       │ tecnicoId        │
+                       │ titulo           │
+┌──────────────┐       │ descricao        │
+│    Local     │       │ status           │
+│──────────────│──┐   │ prioridade        │
+│ id (PK)      │  │   │ criadoEm          │
+│ bloco        │  └───>│ atualizadoEm     │
+│ sala         │       └────────┬─────────┘
+│ campus       │                │ 1:N
+│ criadoEm     │       ┌────────┴─────────┐
+└──────────────┘       │   Comentario      │
+                       │──────────────────│
+                       │ id (PK)          │
+                       │ chamadoId (FK)   │
+                       │ usuarioId        │
+                       │ texto            │
+                       │ criadoEm         │
+                       └──────────────────┘
 ```
 
-## Run tests
+### Transições de Status (Máquina de Estados)
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+ABERTO ──► EM_ANALISE ──► EM_EXECUCAO ──► CONCLUIDO
+  │            │               │
+  └──► CANCELADO   └──► CANCELADO  └──► CANCELADO
 ```
 
-## Deployment
+## Tecnologias
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Tecnologia | Versão | Finalidade |
+|---|---|---|
+| **Node.js** | ≥18 | Runtime |
+| **NestJS** | 11 | Framework backend |
+| **Express** | - | Servidor HTTP |
+| **TypeScript** | 5.7 | Linguagem |
+| **React** | 19 | Framework frontend |
+| **Vite** | 6 | Bundler frontend |
+| **React Router** | 7 | Roteamento SPA |
+| **Axios** | 1 | HTTP Client |
+| **class-validator** | 0.15 | Validação de DTOs |
+| **Jest** | 30 | Testes unitários |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Como Rodar
+
+### Pré-requisitos
+
+- Node.js ≥ 18
+- npm ≥ 9
+
+### Backend
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Instalar dependências
+npm install
+
+# Executar em modo desenvolvimento (com watch)
+npm run start:dev
+
+# Servidor rodando em http://localhost:3000
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Frontend
 
-## Resources
+```bash
+# Instalar dependências
+cd frontend && npm install
 
-Check out a few resources that may come in handy when working with NestJS:
+# Executar em modo desenvolvimento
+npm run dev
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Servidor rodando em http://localhost:5173
+# (requer backend rodando na porta 3000)
+```
 
-## Support
+### Testes
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+# Testes unitários (backend)
+npm run test
 
-## Stay in touch
+# Testes unitários com cobertura
+npm run test:cov
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Testes e2e
+npm run test:e2e
+```
 
-## License
+### Lint
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npm run lint
+```
+
+## Scripts Disponíveis
+
+| Comando | Descrição |
+|---|---|
+| `npm run start:dev` | Inicia backend com hot-reload |
+| `npm run build` | Compila o backend |
+| `npm run test` | Executa testes unitários |
+| `npm run test:cov` | Testes com cobertura |
+| `npm run test:e2e` | Testes end-to-end |
+| `npm run lint` | Verifica lint |
+| `cd frontend && npm run dev` | Inicia frontend |
+
+## Endpoints da API
+
+### Chamados
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/chamados` | Listar chamados (filtros: status, categoriaId, tecnicoId, pagina, limite) |
+| `POST` | `/chamados` | Criar chamado |
+| `GET` | `/chamados/:id` | Buscar chamado por ID |
+| `PATCH` | `/chamados/:id` | Atualizar chamado |
+| `PATCH` | `/chamados/:id/status` | Alterar status (com validação de state machine) |
+| `DELETE` | `/chamados/:id` | Remover chamado |
+| `POST` | `/chamados/:id/comentarios` | Adicionar comentário |
+| `GET` | `/chamados/:id/comentarios` | Listar comentários |
+
+### Categorias
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/categorias` | Listar categorias |
+| `POST` | `/categorias` | Criar categoria |
+| `GET` | `/categorias/:id` | Buscar categoria |
+| `PATCH` | `/categorias/:id` | Atualizar categoria |
+| `DELETE` | `/categorias/:id` | Remover categoria |
+
+### Locais
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/locais` | Listar locais |
+| `POST` | `/locais` | Criar local |
+| `GET` | `/locais/:id` | Buscar local |
+| `PATCH` | `/locais/:id` | Atualizar local |
+| `DELETE` | `/locais/:id` | Remover local |
+
+## Integrantes
+
+- [Felipe] - Desenvolvimento Full Stack
