@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
+import { USUARIO_ID } from '../config'
 import type { Categoria, Local, PrioridadeChamado } from '../types'
 
 const prioridades: { value: PrioridadeChamado; label: string }[] = [
@@ -50,7 +51,6 @@ export default function Abertura() {
     prioridade: '' as PrioridadeChamado | '',
     categoriaId: '',
     localId: '',
-    solicitanteId: '',
   })
 
   useEffect(() => {
@@ -64,10 +64,6 @@ export default function Abertura() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files) setAnexos(Array.from(e.target.files))
-  }
-
   function removerAnexo(i: number) {
     setAnexos(anexos.filter((_, idx) => idx !== i))
   }
@@ -77,7 +73,7 @@ export default function Abertura() {
     setErro('')
     setErrosUpload([])
 
-    if (!form.titulo || !form.descricao || !form.categoriaId || !form.localId || !form.solicitanteId) {
+    if (!form.titulo || !form.descricao || !form.categoriaId || !form.localId) {
       setErro('Preencha todos os campos obrigatórios.')
       return
     }
@@ -90,7 +86,7 @@ export default function Abertura() {
         prioridade: form.prioridade || undefined,
         categoriaId: form.categoriaId,
         localId: form.localId,
-        solicitanteId: form.solicitanteId,
+        solicitanteId: USUARIO_ID,
       })
 
       const erros: string[] = []
@@ -168,11 +164,6 @@ export default function Abertura() {
               ))}
             </select>
           </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="solicitanteId">ID do Solicitante *</label>
-          <input id="solicitanteId" name="solicitanteId" value={form.solicitanteId} onChange={handleChange} placeholder="UUID do solicitante" />
         </div>
 
         <div className="form-group">
