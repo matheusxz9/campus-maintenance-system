@@ -61,8 +61,8 @@ export default function Detalhes() {
     ABERTO: ['EM_ANALISE', 'CANCELADO'],
     EM_ANALISE: ['EM_EXECUCAO', 'CANCELADO'],
     EM_EXECUCAO: ['CONCLUIDO', 'CANCELADO'],
-    CONCLUIDO: [],
-    CANCELADO: [],
+    CONCLUIDO: ['ABERTO'],
+    CANCELADO: ['ABERTO'],
   }
 
   if (loading) return <div className="loading">Carregando...</div>

@@ -10,8 +10,8 @@ const transicoes: Record<StatusChamado, StatusChamado[]> = {
     StatusChamado.CONCLUIDO,
     StatusChamado.CANCELADO,
   ],
-  [StatusChamado.CONCLUIDO]: [],
-  [StatusChamado.CANCELADO]: [],
+  [StatusChamado.CONCLUIDO]: [StatusChamado.ABERTO],
+  [StatusChamado.CANCELADO]: [StatusChamado.ABERTO],
 };
 
 export function transitar(origem: StatusChamado, destino: StatusChamado): void {
