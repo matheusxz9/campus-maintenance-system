@@ -32,16 +32,11 @@ class TipoArquivoValidator extends FileValidator {
   }
 }
 
-@Controller()
+@Controller('chamados')
 export class AnexosController {
   constructor(private readonly anexosService: AnexosService) {}
 
-  @Get('health')
-  health() {
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  }
-
-  @Post('chamados/:id/anexos')
+  @Post(':id/anexos')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -74,7 +69,7 @@ export class AnexosController {
     );
   }
 
-  @Get('chamados/:id/anexos')
+  @Get(':id/anexos')
   listar(@Param('id', ParseUUIDPipe) id: string) {
     return this.anexosService.listarPorChamado(id);
   }
