@@ -38,7 +38,10 @@ export class ChamadosService {
     return chamado;
   }
 
-  listar(filtro: FiltrarChamadoDto): { dados: Chamado[]; total: number } {
+  listar(filtro: FiltrarChamadoDto): {
+    dados: Chamado[];
+    paginacao: { total: number; pagina: number; limite: number; totalPaginas: number };
+  } {
     let resultado = [...this.chamados];
 
     if (filtro.status) {
@@ -56,10 +59,11 @@ export class ChamadosService {
     const total = resultado.length;
     const pagina = filtro.pagina ?? 1;
     const limite = filtro.limite ?? 10;
+    const totalPaginas = Math.ceil(total / limite);
     const inicio = (pagina - 1) * limite;
     const dados = resultado.slice(inicio, inicio + limite);
 
-    return { dados, total };
+    return { dados, paginacao: { total, pagina, limite, totalPaginas } };
   }
 
   buscarPorId(id: string): Chamado {
@@ -86,10 +90,7 @@ export class ChamadosService {
       );
     }
 
-    if (
-      dto.status === StatusChamado.EM_EXECUCAO &&
-      !dto.tecnicoId
-    ) {
+    if (dto.status === StatusChamado.EM_EXECUCAO && !dto.tecnicoId) {
       throw new BadRequestException(
         'Tecnico obrigatorio para executar chamado',
       );
