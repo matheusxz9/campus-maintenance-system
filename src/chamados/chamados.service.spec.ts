@@ -25,7 +25,7 @@ describe('ChamadosService', () => {
       const chamado = service.criar({
         titulo: 'Teste',
         descricao: 'Descricao',
-        categoriaId: '00000000-0000-0000-0000-000000000001',
+        categoriaId: '20251038060001',
         localId: '00000000-0000-0000-0000-000000000002',
         solicitanteId: '00000000-0000-0000-0000-000000000003',
       });
@@ -63,9 +63,7 @@ describe('ChamadosService', () => {
       });
 
       expect(resultado.status).toBe(StatusChamado.EM_EXECUCAO);
-      expect(resultado.tecnicoId).toBe(
-        '00000000-0000-0000-0000-000000000099',
-      );
+      expect(resultado.tecnicoId).toBe('00000000-0000-0000-0000-000000000099');
     });
   });
 });
