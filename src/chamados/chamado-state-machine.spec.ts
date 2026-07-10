@@ -32,15 +32,15 @@ describe('chamado-state-machine', () => {
     ).not.toThrow();
   });
 
-  it('should not allow CONCLUIDO -> ABERTO', () => {
+  it('should allow CONCLUIDO -> ABERTO (reabrir)', () => {
     expect(() =>
       transitar(StatusChamado.CONCLUIDO, StatusChamado.ABERTO),
-    ).toThrow('Transicao invalida');
+    ).not.toThrow();
   });
 
-  it('should not allow CANCELADO -> ABERTO', () => {
+  it('should allow CANCELADO -> ABERTO (reabrir)', () => {
     expect(() =>
       transitar(StatusChamado.CANCELADO, StatusChamado.ABERTO),
-    ).toThrow('Transicao invalida');
+    ).not.toThrow();
   });
 });

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "postinstall": "npm --prefix frontend install",
+    "postinstall": "test -d frontend && npm --prefix frontend install || true",
     "start": "nest start",
     "dev": "concurrently -n api,web -c blue,green \"npm run start:dev\" \"npm --prefix frontend run dev\"",
     "start:dev": "nest start --watch",
@@ -56,8 +56,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0",
-    "@types/multer": "^1.4.12"
+    "typescript-eslint": "^8.20.0"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../api'
-import type { Chamado, Comentario, StatusChamado } from '../types'
+import type { Anexo, Chamado, Comentario, StatusChamado } from '../types'
 
 const statusList: StatusChamado[] = ['ABERTO', 'EM_ANALISE', 'EM_EXECUCAO', 'CONCLUIDO', 'CANCELADO']
 
@@ -17,16 +17,18 @@ export default function Detalhes() {
   const { id } = useParams<{ id: string }>()
   const [chamado, setChamado] = useState<Chamado | null>(null)
   const [comentarios, setComentarios] = useState<Comentario[]>([])
+  const [anexos, setAnexos] = useState<Anexo[]>([])
   const [novoComentario, setNovoComentario] = useState('')
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
 
   useEffect(() => {
     if (!id) return
-    Promise.all([api.buscarChamado(id), api.listarComentarios(id)])
-      .then(([c, cm]) => {
+    Promise.all([api.buscarChamado(id), api.listarComentarios(id), api.listarAnexos(id)])
+      .then(([c, cm, an]) => {
         setChamado(c)
         setComentarios(cm)
+        setAnexos(an)
       })
       .catch(() => setErro('Chamado não encontrado.'))
       .finally(() => setLoading(false))
@@ -61,8 +63,8 @@ export default function Detalhes() {
     ABERTO: ['EM_ANALISE', 'CANCELADO'],
     EM_ANALISE: ['EM_EXECUCAO', 'CANCELADO'],
     EM_EXECUCAO: ['CONCLUIDO', 'CANCELADO'],
-    CONCLUIDO: [],
-    CANCELADO: [],
+    CONCLUIDO: ['ABERTO'],
+    CANCELADO: ['ABERTO'],
   }
 
   if (loading) return <div className="loading">Carregando...</div>
@@ -105,6 +107,22 @@ export default function Detalhes() {
               </button>
             ))}
         </div>
+      </div>
+
+      <div className="detalhes-anexos">
+        <h3>Anexos ({anexos.length})</h3>
+
+        <ul className="anexos-lista">
+          {anexos.length === 0 && <li className="empty">Nenhum anexo ainda.</li>}
+          {anexos.map((a) => (
+            <li key={a.id}>
+              <a href={`/uploads/${a.caminho.split('/').pop()}`} target="_blank" rel="noopener noreferrer">
+                {a.nomeOriginal}
+              </a>
+              <span className="anexo-tamanho"> ({(a.tamanho / 1024).toFixed(1)} KB)</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="detalhes-comentarios">

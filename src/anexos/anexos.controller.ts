@@ -1,3 +1,5 @@
+import { FileValidator } from '@nestjs/common';
+import { diskStorage } from 'multer';
 import {
   Controller,
   Get,
@@ -8,13 +10,27 @@ import {
   UploadedFile,
   ParseFilePipe,
   MaxFileSizeValidator,
-  FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { AnexosService } from './anexos.service';
+
+class TipoArquivoValidator extends FileValidator {
+  private readonly tiposPermitidos = [
+    'image/jpeg',
+    'image/png',
+    'application/pdf',
+  ];
+
+  isValid(file: Express.Multer.File): boolean {
+    return this.tiposPermitidos.includes(file.mimetype);
+  }
+
+  buildErrorMessage(): string {
+    return `Tipo de arquivo invalido. Permitidos: ${this.tiposPermitidos.join(', ')}`;
+  }
+}
 
 @Controller()
 export class AnexosController {
@@ -43,12 +59,23 @@ export class AnexosController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /\/(jpeg|png|pdf)$/ }),
+          new TipoArquivoValidator({}),
         ],
       }),
     )
     file: Express.Multer.File,
   ) {
-    return this.anexosService.salvarReferenciaAnexo(id, file.path);
+    return this.anexosService.salvarReferenciaAnexo(
+      id,
+      file.originalname,
+      file.path,
+      file.size,
+      file.mimetype,
+    );
+  }
+
+  @Get('chamados/:id/anexos')
+  listar(@Param('id', ParseUUIDPipe) id: string) {
+    return this.anexosService.listarPorChamado(id);
   }
 }

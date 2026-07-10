@@ -67,7 +67,7 @@ export default function Abertura() {
 
       for (const file of anexos) {
         try {
-          await api.uploadAnexo(file)
+          await api.uploadAnexo(chamado.id, file)
         } catch {
           // se nao tiver upload implantado, ignora
         }

@@ -60,6 +60,16 @@ export interface CriarChamadoPayload {
   solicitanteId: string
 }
 
+export interface Anexo {
+  id: string
+  chamadoId: string
+  nomeOriginal: string
+  caminho: string
+  tamanho: number
+  tipo: string
+  criadoEm: string
+}
+
 export interface AtualizarStatusPayload {
   status: StatusChamado
   tecnicoId?: string
