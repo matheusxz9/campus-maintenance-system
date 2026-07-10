@@ -1,3 +1,4 @@
+import { diskStorage } from 'multer';
 import {
   Controller,
   Get,
@@ -11,7 +12,6 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { AnexosService } from './anexos.service';
