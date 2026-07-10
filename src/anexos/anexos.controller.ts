@@ -1,3 +1,4 @@
+import { FileValidator } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import {
   Controller,
@@ -9,12 +10,27 @@ import {
   UploadedFile,
   ParseFilePipe,
   MaxFileSizeValidator,
-  FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { AnexosService } from './anexos.service';
+
+class TipoArquivoValidator extends FileValidator {
+  private readonly tiposPermitidos = [
+    'image/jpeg',
+    'image/png',
+    'application/pdf',
+  ];
+
+  isValid(file: Express.Multer.File): boolean {
+    return this.tiposPermitidos.includes(file.mimetype);
+  }
+
+  buildErrorMessage(): string {
+    return `Tipo de arquivo invalido. Permitidos: ${this.tiposPermitidos.join(', ')}`;
+  }
+}
 
 @Controller()
 export class AnexosController {
@@ -43,7 +59,7 @@ export class AnexosController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /\/(jpeg|png|pdf)$/ }),
+          new TipoArquivoValidator({}),
         ],
       }),
     )
