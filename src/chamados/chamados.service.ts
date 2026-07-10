@@ -40,7 +40,12 @@ export class ChamadosService {
 
   listar(filtro: FiltrarChamadoDto): {
     dados: Chamado[];
-    paginacao: { total: number; pagina: number; limite: number; totalPaginas: number };
+    paginacao: {
+      total: number;
+      pagina: number;
+      limite: number;
+      totalPaginas: number;
+    };
   } {
     let resultado = [...this.chamados];
 

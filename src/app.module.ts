@@ -8,7 +8,13 @@ import { AnexosModule } from './anexos/anexos.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
-  imports: [CategoriasModule, LocaisModule, ChamadosModule, AnexosModule, HealthModule],
+  imports: [
+    CategoriasModule,
+    LocaisModule,
+    ChamadosModule,
+    AnexosModule,
+    HealthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
