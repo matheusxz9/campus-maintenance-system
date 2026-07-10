@@ -49,6 +49,17 @@ export class AnexosController {
     )
     file: Express.Multer.File,
   ) {
-    return this.anexosService.salvarReferenciaAnexo(id, file.path);
+    return this.anexosService.salvarReferenciaAnexo(
+      id,
+      file.originalname,
+      file.path,
+      file.size,
+      file.mimetype,
+    );
+  }
+
+  @Get('chamados/:id/anexos')
+  listar(@Param('id', ParseUUIDPipe) id: string) {
+    return this.anexosService.listarPorChamado(id);
   }
 }

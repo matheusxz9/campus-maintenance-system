@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type {
+  Anexo,
   Chamado,
   Categoria,
   Local,
@@ -63,10 +64,14 @@ export const api = {
   },
 
   // ----- Anexos -----
-  async uploadAnexo(chamadoId: string, file: File): Promise<{ url: string; nome: string }> {
+  async uploadAnexo(chamadoId: string, file: File): Promise<Anexo> {
     const formData = new FormData()
     formData.append('file', file)
     const { data } = await http.post(`/chamados/${chamadoId}/anexos`, formData)
     return data
+  },
+
+  listarAnexos(chamadoId: string): Promise<Anexo[]> {
+    return http.get(`/chamados/${chamadoId}/anexos`).then((r) => r.data)
   },
 }
