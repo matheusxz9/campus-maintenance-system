@@ -16,6 +16,7 @@ export default function Abertura() {
   const [anexos, setAnexos] = useState<File[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [erro, setErro] = useState('')
+  const [errosUpload, setErrosUpload] = useState<string[]>([])
 
   const [form, setForm] = useState({
     titulo: '',
@@ -48,6 +49,7 @@ export default function Abertura() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setErro('')
+    setErrosUpload([])
 
     if (!form.titulo || !form.descricao || !form.categoriaId || !form.localId || !form.solicitanteId) {
       setErro('Preencha todos os campos obrigatórios.')
@@ -65,13 +67,16 @@ export default function Abertura() {
         solicitanteId: form.solicitanteId,
       })
 
+      const erros: string[] = []
       for (const file of anexos) {
         try {
           await api.uploadAnexo(chamado.id, file)
-        } catch {
-          // se nao tiver upload implantado, ignora
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : 'Erro desconhecido'
+          erros.push(`Falha ao anexar "${file.name}": ${msg}`)
         }
       }
+      if (erros.length > 0) setErrosUpload(erros)
 
       navigate(`/chamados/${chamado.id}`)
     } catch (err: unknown) {
@@ -87,6 +92,14 @@ export default function Abertura() {
       <h2>Abrir Chamado</h2>
 
       {erro && <div className="erro-box">{erro}</div>}
+      {errosUpload.length > 0 && (
+        <div className="erro-box">
+          <strong>Erros nos anexos:</strong>
+          <ul style={{ marginTop: 8, paddingLeft: 20 }}>
+            {errosUpload.map((e, i) => <li key={i}>{e}</li>)}
+          </ul>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="form">
         <div className="form-group">

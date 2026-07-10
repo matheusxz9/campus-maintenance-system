@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../api'
+import { USUARIO_ID } from '../config'
 import type { Anexo, Chamado, Comentario, StatusChamado } from '../types'
 
 const statusList: StatusChamado[] = ['ABERTO', 'EM_ANALISE', 'EM_EXECUCAO', 'CONCLUIDO', 'CANCELADO']
@@ -50,7 +51,7 @@ export default function Detalhes() {
     try {
       const comentario = await api.adicionarComentario(id, {
         texto: novoComentario,
-        usuarioId: '00000000-0000-0000-0000-000000000001',
+        usuarioId: USUARIO_ID,
       })
       setComentarios([...comentarios, comentario])
       setNovoComentario('')
