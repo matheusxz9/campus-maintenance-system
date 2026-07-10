@@ -62,11 +62,11 @@ export const api = {
     return http.get('/locais').then((r) => r.data)
   },
 
-  // ----- Anexos (fake upload) -----
-  async uploadAnexo(file: File): Promise<{ url: string; nome: string }> {
+  // ----- Anexos -----
+  async uploadAnexo(chamadoId: string, file: File): Promise<{ url: string; nome: string }> {
     const formData = new FormData()
     formData.append('file', file)
-    const { data } = await http.post('/upload', formData)
+    const { data } = await http.post(`/chamados/${chamadoId}/anexos`, formData)
     return data
   },
 }
