@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api'
 import type { Categoria, Local, PrioridadeChamado } from '../types'
@@ -11,12 +11,38 @@ const prioridades: { value: PrioridadeChamado; label: string }[] = [
 
 export default function Abertura() {
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [locais, setLocais] = useState<Local[]>([])
   const [anexos, setAnexos] = useState<File[]>([])
+  const [isDragging, setIsDragging] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [erro, setErro] = useState('')
   const [errosUpload, setErrosUpload] = useState<string[]>([])
+
+  function adicionarArquivos(files: FileList) {
+    setAnexos(prev => [...prev, ...Array.from(files)])
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(false)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(false)
+    if (e.dataTransfer.files) adicionarArquivos(e.dataTransfer.files)
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) adicionarArquivos(e.target.files)
+  }
 
   const [form, setForm] = useState({
     titulo: '',
@@ -151,16 +177,44 @@ export default function Abertura() {
 
         <div className="form-group">
           <label>Anexos</label>
-          <input type="file" multiple onChange={handleFileChange} className="file-input" />
+          <div
+            className={`upload-zone${isDragging ? ' dragging' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click() }}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              hidden
+            />
+            <p>{isDragging ? 'Solte os arquivos aqui' : 'Arraste arquivos ou clique para selecionar'}</p>
+            <span className="upload-hint">JPEG, PNG ou PDF (máx. 5MB cada)</span>
+          </div>
+
           {anexos.length > 0 && (
-            <ul className="anexos-lista">
+            <div className="preview-grid">
               {anexos.map((file, i) => (
-                <li key={i}>
-                  {file.name}
-                  <button type="button" className="btn-link" onClick={() => removerAnexo(i)}>Remover</button>
-                </li>
+                <div key={i} className="preview-card">
+                  {file.type.startsWith('image/') ? (
+                    <img src={URL.createObjectURL(file)} alt={file.name} />
+                  ) : (
+                    <div className="preview-icon">{file.name.split('.').pop()?.toUpperCase()}</div>
+                  )}
+                  <div className="preview-info">
+                    <span className="preview-nome" title={file.name}>{file.name}</span>
+                    <span className="preview-tamanho">{(file.size / 1024).toFixed(1)} KB</span>
+                  </div>
+                  <button type="button" className="preview-remove" onClick={() => removerAnexo(i)} title="Remover">&times;</button>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
 
