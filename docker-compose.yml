@@ -12,3 +12,27 @@ services:
     environment:
       - PORT=3000
       - UPLOAD_PATH=./uploads
+
+  lint:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: npm run lint
+    profiles:
+      - ci
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: npm test
+    profiles:
+      - ci
+    volumes:
+      - .:/app
+      - /app/node_modules
