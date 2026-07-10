@@ -39,12 +39,23 @@ export default function Detalhes() {
 
   async function handleMudarStatus(novoStatus: StatusChamado) {
     if (!id || !chamado) return
+
+    let tecnicoId: string | undefined
+    if (novoStatus === 'EM_EXECUCAO') {
+      tecnicoId = window.prompt('ID do técnico responsável:') || undefined
+      if (!tecnicoId) return
+    }
+
     try {
-      const atualizado = await api.atualizarStatus(id, { status: novoStatus })
+      const atualizado = await api.atualizarStatus(id, { status: novoStatus, tecnicoId })
       setChamado(atualizado)
       addToast(`Status alterado para ${statusLabel[novoStatus]}`)
-    } catch {
-      addToast('Transição de status inválida.', 'error')
+    } catch (err) {
+      const msg =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response: { data: { message: string } } }).response.data?.message
+          : 'Transição de status inválida.'
+      addToast(msg, 'error')
     }
   }
 
