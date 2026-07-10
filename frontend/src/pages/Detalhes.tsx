@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../api'
 import { USUARIO_ID } from '../config'
+import { useToast } from '../context/ToastContext'
 import type { Anexo, Chamado, Comentario, StatusChamado } from '../types'
 
 const statusList: StatusChamado[] = ['ABERTO', 'EM_ANALISE', 'EM_EXECUCAO', 'CONCLUIDO', 'CANCELADO']
@@ -16,6 +17,7 @@ const statusLabel: Record<StatusChamado, string> = {
 
 export default function Detalhes() {
   const { id } = useParams<{ id: string }>()
+  const { addToast } = useToast()
   const [chamado, setChamado] = useState<Chamado | null>(null)
   const [comentarios, setComentarios] = useState<Comentario[]>([])
   const [anexos, setAnexos] = useState<Anexo[]>([])
@@ -40,8 +42,9 @@ export default function Detalhes() {
     try {
       const atualizado = await api.atualizarStatus(id, { status: novoStatus })
       setChamado(atualizado)
+      addToast(`Status alterado para ${statusLabel[novoStatus]}`)
     } catch {
-      alert('Transição de status inválida.')
+      addToast('Transição de status inválida.', 'error')
     }
   }
 
@@ -55,8 +58,9 @@ export default function Detalhes() {
       })
       setComentarios([...comentarios, comentario])
       setNovoComentario('')
+      addToast('Comentário adicionado.')
     } catch {
-      alert('Erro ao adicionar comentário.')
+      addToast('Erro ao adicionar comentário.', 'error')
     }
   }
 
