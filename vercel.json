@@ -1,8 +1,7 @@
 {
-  "rootDirectory": "frontend",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": null,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://campus-maintenance-api-nzjg.onrender.com/$1" },
     { "source": "/uploads/(.*)", "destination": "https://campus-maintenance-api-nzjg.onrender.com/uploads/$1" }
