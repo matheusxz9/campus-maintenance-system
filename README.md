@@ -236,4 +236,7 @@ O `vercel.json` na raiz do projeto faz o proxy de `/api` e `/uploads` para o Ren
 
 ## Integrantes
 
-- [Felipe] - Desenvolvimento Full Stack
+- Matheus William
+- Felipe Octavio
+- Luis Felipe
+- Pedro Eduardo
